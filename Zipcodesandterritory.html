@@ -1,0 +1,337 @@
+<html>
+  <head>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<style>
+    #map {
+      height: 100%;
+    }
+    
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    
+	 #legend {
+            position: absolute;
+            bottom: 20px;
+            right: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            max-height: 300px; 
+            overflow-y: auto;
+			scrollbar-width: thin; 
+            scrollbar-color: #cccccc #f0f0f0;
+        }
+
+		.legend-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .legend-color {
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .legend-text {
+            font-size: 12px; 
+        }
+     #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+		
+		#search-input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    
+  </style>
+  
+		 <div id="search-container">
+        <input id="search-input" type="search" placeholder="Search for a location">
+    </div>
+		<div id="map"></div>
+		<div id="legend"></div>
+<div id="loading">
+        <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Loading..." />
+    </div>
+	
+	<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script>
+	
+var map;
+var infowindow;
+var markers = [];
+var markersTarget = [];
+
+var count =1;
+
+	function initMap(){
+	document.getElementById('loading').style.display = 'block';
+		map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 4,
+			center: { lat: 39.80549692336535, lng: -100.82492787547338 },
+			fullscreenControl: false,
+			mapTypeControl: true,
+			zoomControlOptions: {
+                    position: google.maps.ControlPosition.LEFT_BOTTOM
+                },
+				mapTypeControlOptions: {
+                    position: google.maps.ControlPosition.LEFT_TOP, 
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR 
+                },
+				
+                
+				
+			
+		  });
+	infowindow = new google.maps.InfoWindow();
+	var marker = new google.maps.Marker({
+                map: map,
+                anchorPoint: new google.maps.Point(0, -29) // Position the marker icon at the bottom center of the marker
+            });
+	var searchInput = document.getElementById('search-input');
+	 map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchInput);
+            var autocomplete = new google.maps.places.Autocomplete(searchInput, {
+                types: ['(regions)'],
+                componentRestrictions: { country: 'us' }
+            });
+
+            autocomplete.bindTo('bounds', map);
+
+            autocomplete.addListener('place_changed', function() {
+			marker.setVisible(false);
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    window.alert("No details available for input: '" + place.name + "'");
+                    return;
+                }
+
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);  // Set the zoom level to 17 if the place has no viewport defined
+                }
+				marker.setPosition(place.geometry.location);
+                marker.setVisible(true);
+            });
+	
+	
+	}
+    function makeApiCall() {
+      var params = {
+        
+        spreadsheetId: '1rlKY41fc-Uf8P2PC-FE79ci7HJ0-m4tshFYrwMcxsO4',  
+
+        
+        range: 'Sheet1',  
+
+        
+      };
+	  
+	  
+
+      var request = gapi.client.sheets.spreadsheets.values.get(params);
+      request.then(function(response) {
+        
+        
+		showZipCodes(response.result.values);
+      }, function(reason) {
+        console.error('error: ' + reason.result.error.message);
+      });
+	  
+	 
+    }
+
+    async function initClient() {
+      var API_KEY = 'AIzaSyBHyEf3dH5YF22X3qvkZ0Jumvu8WuiS5pA';  
+
+      
+						
+
+      
+	  
+      var SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+
+      await gapi.client.init({
+        'apiKey': API_KEY,
+        
+        'discoveryDocs': ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+      }).then(function(resp) {
+			
+			console.log(resp)
+			
+      }, function(reason) {
+        console.error('error: ' + reason);
+      });
+	  makeApiCall();
+	  
+    }
+	
+	function gisLoaded(){
+	
+		var CLIENT_ID = '200891880509-ntge58h6sg5qrirnekm9nmq14k395dl5.apps.googleusercontent.com';  
+		const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+		tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: '', // defined later
+        });
+        gisInited = true;
+		
+		tokenClient.callback = async (resp) => {
+          if (resp.error !== undefined) {
+            throw (resp);
+          }
+          
+			
+        };
+		
+	}
+	
+	
+
+    function handleClientLoad() {
+      gapi.load('client', initClient);
+	  
+    }
+	
+	
+   
+	function showZipCodes(sheetValues){
+	
+		var titleArr = sheetValues[0]; 
+		
+		  
+		  var zipIndex = titleArr.indexOf("ZIP Code");
+		  var technicianIndex = titleArr.indexOf("Territory/Zone");
+		  var colorIndex = titleArr.indexOf("Color");
+		  
+		  map.data.loadGeoJson(
+    "https://raw.githubusercontent.com/ndrezn/zip-code-geojson/main/usa_zip_codes_geo_100m.json",
+  );
+		  google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
+                // Hide loading gif once polygons are loaded
+                document.getElementById('loading').style.display = 'none';
+            });
+		 map.data.setStyle(function(feature) {
+                var zipCode = feature.getProperty('ZCTA5CE10'); 
+                for (var i = 1; i < sheetValues.length; i++) {
+                    if (sheetValues[i][zipIndex] === zipCode) {
+                        return {
+                            fillColor: sheetValues[i][colorIndex],
+                            strokeWeight: 0.1,
+                            fillOpacity: 0.5
+                        };
+                    }
+                }
+                return { visible: false }; 
+            });
+		  
+		  createLegend(sheetValues, colorIndex, technicianIndex);
+		  
+		  var infowindow = new google.maps.InfoWindow();
+		  
+			
+
+            map.data.addListener('click', function(event) {
+                var zipCode = event.feature.getProperty('ZCTA5CE10');
+				
+					var matchingData = sheetValues.find(function(item) {
+						return item[0] === zipCode;
+					});
+				
+					var contentString = '<div">'; 
+					contentString += '<p><b>'+ zipCode +'</b></p></br>'; 
+					contentString += '<p> Tech: '+ matchingData[1] +'</p>'; 
+					contentString += '</div>';
+                    infowindow.setContent(contentString);
+                    infowindow.setPosition(event.latLng);
+                    infowindow.open(map);
+                
+            });
+		  
+	
+	
+	
+	}
+	
+	function createLegend(data, colorIndex, technicianIndex) {
+            var legendDiv = document.getElementById('legend');
+
+            legendDiv.innerHTML = '';
+
+            var uniqueColors = [];
+            for (var i = 0; i < data.length; i++) {
+			
+				if (data[i][technicianIndex] == "Territory/Zone") {
+                    var titleElement = document.createElement('div');
+                    titleElement.classList.add('legend-title');
+                    titleElement.textContent = data[i][technicianIndex];
+                    legendDiv.appendChild(titleElement);
+                }else{
+					if (!uniqueColors.includes(data[i][colorIndex])) {
+                    uniqueColors.push(data[i][colorIndex]);
+                    var legendItem = document.createElement('div');
+                    legendItem.classList.add('legend-item');
+                    var colorCircle = document.createElement('div');
+                    colorCircle.classList.add('legend-color');
+                    colorCircle.style.backgroundColor = data[i][colorIndex];
+                    var legendText = document.createElement('span');
+					
+                    legendText.classList.add('legend-text');
+                    legendText.textContent = data[i][technicianIndex];
+                    legendItem.appendChild(colorCircle);
+                    legendItem.appendChild(legendText);
+                    legendDiv.appendChild(legendItem);
+                }
+				
+				}
+                
+            }
+        }
+	
+	
+	
+	
+	
+	
+	
+	
+    </script>
+	
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHyEf3dH5YF22X3qvkZ0Jumvu8WuiS5pA&libraries=places&callback=initMap"></script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="handleClientLoad()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    
+    
+  </body>
+</html>
