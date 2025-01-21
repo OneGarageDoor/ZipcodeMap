@@ -90,7 +90,7 @@ var infowindow;
 
 async function fetchAuthKey() {
     try {
-        const response = await fetch('https://backend-afee.onrender.com/auth', {
+        const response = await fetch('https://onegaragedoorproxy.onrender.com/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({})
@@ -106,7 +106,7 @@ async function fetchAuthKey() {
 async function fetchTechnicianData(authKey) {
     try {
 	
-        const response = await fetch('https://backend-afee.onrender.com/data', {
+        const response = await fetch('https://onegaragedoorproxy.onrender.com/data', {
             method: 'GET',
             headers: { 'authorization': authKey,
 						'stappkey': 'ak1.z3ezzg1m7ucb3gn7koawlue8i'}
