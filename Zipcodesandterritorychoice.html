@@ -327,12 +327,13 @@ function addMarkersFromExcel(sheetData) {
                 title: address,
 				name: name,
 				icon: {
-                    path: "M 0,0 C -2,-4 -6,-8 -6,-12 A 6,6 0 1,1 6,-12 C 6,-8 2,-4 0,0 z", // Corrected SVG path
+                   path: google.maps.SymbolPath.CIRCLE,
                     fillColor: "#000",
                     fillOpacity: 1,
                     strokeWeight: 0,
-					strokeColor: "#000",
-                    scale: 1.5, 
+					
+                    scale: 2, 
+
                     //anchor: new google.maps.Point(0, -10)
                 }
             });
