@@ -91,7 +91,7 @@
 		<div id="legend"></div>
 		 <div id="toggleMarkersBox">
 				<label>
-					<input type="checkbox" id="toggleMarkers" checked> Choice Warranty
+					<input type="checkbox" id="toggleMarkers"> Choice Warranty
 				</label>
 			</div>
 <div id="loading">
@@ -323,24 +323,24 @@ function addMarkersFromExcel(sheetData) {
             
             const marker = new google.maps.Marker({
                 position: { lat, lng },
-                map: map,
+                map: null,
                 title: address,
 				name: name,
 				icon: {
-                   path: google.maps.SymbolPath.CIRCLE,
+                    //path: "M 0,0 C -2,-4 -6,-8 -6,-12 A 6,6 0 1,1 6,-12 C 6,-8 2,-4 0,0 z", 
+					path: google.maps.SymbolPath.CIRCLE,
                     fillColor: "#000",
                     fillOpacity: 1,
                     strokeWeight: 0,
 					
                     scale: 2, 
-
                     //anchor: new google.maps.Point(0, -10)
                 }
             });
 
            
             const circle = new google.maps.Circle({
-                map: map,
+                map: null,
                 center: { lat, lng },
                 radius: 75 * 1609.34, 
                 fillColor: "#000",
