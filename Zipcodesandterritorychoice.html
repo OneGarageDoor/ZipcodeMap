@@ -108,7 +108,7 @@ let infoWindowMarker;
 
 async function fetchTechnicianData() {
     try {
-        const response = await fetch('https://onegaragedoorproxy.onrender.com/fetch-data', { 
+        const response = await fetch('https://onegaragedoorproxy-cof9.onrender.com/fetch-data', { 
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -142,7 +142,7 @@ async function fetchColorData(url) {
 
 async function fetchExcelData() {
 	try {
-		const response = await fetch("https://onegaragedoorproxy.onrender.com/get-excel-data");
+		const response = await fetch("https://onegaragedoorproxy-cof9.onrender.com/get-excel-data");
 		const data = await response.json();
 		
 		//console.log(data);
@@ -388,4 +388,5 @@ document.addEventListener("DOMContentLoaded", function () {
     
   </body>
 </html>
+
 
